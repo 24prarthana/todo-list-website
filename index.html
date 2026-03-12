@@ -7,79 +7,82 @@
 <style>
 
 body{
-    font-family: Arial;
-    background: linear-gradient(to right,#667eea,#764ba2);
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+font-family:Arial;
+background:linear-gradient(135deg,#667eea,#764ba2);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
 }
 
 .container{
-    background:white;
-    width:400px;
-    padding:25px;
-    border-radius:10px;
-    box-shadow:0 0 15px rgba(0,0,0,0.2);
+background:white;
+width:350px;
+padding:25px;
+border-radius:10px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
 }
 
 h2{
-    text-align:center;
+text-align:center;
 }
 
 .input-section{
-    display:flex;
-    gap:10px;
+display:flex;
+gap:10px;
 }
 
 input{
-    flex:1;
-    padding:8px;
+flex:1;
+padding:8px;
 }
 
-.addbtn{
-    background:#667eea;
-    color:white;
-    border:none;
-    padding:8px 12px;
+button{
+padding:8px 12px;
+background:#667eea;
+color:white;
+border:none;
+cursor:pointer;
 }
 
 ul{
-    list-style:none;
-    padding:0;
-    margin-top:20px;
+list-style:none;
+padding:0;
+margin-top:20px;
 }
 
 li{
-    background:#f4f4f4;
-    padding:10px;
-    margin-bottom:10px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+background:#f4f4f4;
+padding:10px;
+margin-bottom:8px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 .completed{
-    text-decoration:line-through;
-    background:#d4edda;
+text-decoration:line-through;
+background:#d4edda;
 }
 
 .complete{
-    background:green;
-    color:white;
-    border:none;
-    padding:5px 8px;
-    margin-right:5px;
+background:green;
+color:white;
+border:none;
+padding:4px 8px;
+margin-right:5px;
 }
 
 .delete{
-    background:red;
-    color:white;
-    border:none;
-    padding:5px 8px;
+background:red;
+color:white;
+border:none;
+padding:4px 8px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -90,7 +93,7 @@ li{
 
 <div class="input-section">
 <input type="text" id="taskInput" placeholder="Enter task">
-<button class="addbtn" onclick="addTask()">Add</button>
+<button onclick="addTask()">Add</button>
 </div>
 
 <ul id="taskList"></ul>
@@ -99,38 +102,75 @@ li{
 
 <script>
 
-function addTask(){
+let tasks = JSON.parse(localStorage.getItem("tasks")) || []
 
-let input=document.getElementById("taskInput");
-let task=input.value;
+function displayTasks(){
 
-if(task===""){
-alert("Enter a task");
-return;
+let list = document.getElementById("taskList")
+list.innerHTML = ""
+
+tasks.forEach((task,index)=>{
+
+let li = document.createElement("li")
+
+if(task.completed){
+li.classList.add("completed")
 }
-
-let li=document.createElement("li");
 
 li.innerHTML = `
-<span>${task}</span>
+<span>${task.text}</span>
 <div>
-<button class="complete" onclick="completeTask(this)">Complete</button>
-<button class="delete" onclick="deleteTask(this)">Delete</button>
+<button class="complete" onclick="completeTask(${index})">✓</button>
+<button class="delete" onclick="deleteTask(${index})">X</button>
 </div>
-`;
+`
 
-document.getElementById("taskList").appendChild(li);
+list.appendChild(li)
 
-input.value="";
+})
+
+localStorage.setItem("tasks", JSON.stringify(tasks))
+
 }
 
-function completeTask(button){
-button.parentElement.parentElement.classList.toggle("completed");
+function addTask(){
+
+let input = document.getElementById("taskInput")
+let text = input.value
+
+if(text === ""){
+alert("Enter a task")
+return
 }
 
-function deleteTask(button){
-button.parentElement.parentElement.remove();
+tasks.push({
+text:text,
+completed:false
+})
+
+input.value=""
+
+displayTasks()
+
 }
+
+function completeTask(index){
+
+tasks[index].completed = !tasks[index].completed
+
+displayTasks()
+
+}
+
+function deleteTask(index){
+
+tasks.splice(index,1)
+
+displayTasks()
+
+}
+
+displayTasks()
 
 </script>
 
